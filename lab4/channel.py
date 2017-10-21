@@ -17,12 +17,6 @@ class Channel:
     def get_processed(self):
         return self.processed
 
-    def change_processed(self):
-        self.processed = not self.processed
-
-    def set_processed(self, processed):
-        self.processed = processed
-
     def generate(self):
         self.processed = True if random.random() > self.p else False
 

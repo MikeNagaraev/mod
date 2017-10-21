@@ -12,10 +12,6 @@ class Queue:
         if (self.items > 0):
             self.items -= 1
 
-
-    def get_items(self):
-        return self.items
-
     def is_full(self):
         return self.items == self.max_items
 
