@@ -17,6 +17,9 @@ def calculate(channel_1, channel_2, queue, request):
                 channel_1.generate()
                 if channel_1.get_processed():
                     channel_1.set_value(0)
+                    if not queue.is_empty():
+                        channel_1.set_value(1)
+                        queue.remove_item()
                 else:
                     channel_2.set_value(0)
         else:
@@ -25,6 +28,9 @@ def calculate(channel_1, channel_2, queue, request):
                 if channel_1.get_processed():
                     channel_1.add_discard()
                     channel_1.set_value(0)
+                    if not queue.is_empty():
+                        channel_1.set_value(1)
+                        queue.remove_item()
     else:
         if channel_1.get_value() == 1:
             channel_1.generate()
