@@ -5,7 +5,14 @@ class Channel:
         self.outs = 0
         self.discards = 0
         self.processed = True
+        self.value = 0
         self.p = p
+
+    def get_value(self):
+        return self.value
+
+    def set_value(self, val):
+        self.value = val
 
     def get_processed(self):
         return self.processed

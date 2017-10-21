@@ -14,10 +14,7 @@ class Request:
         else:
             self.has_request = False
 
-    def set_has_request(self, has_request):
-        self.has_request = has_request
-
-    def has_request(self):
+    def was_request(self):
         return self.has_request
 
     def get_requests(self):
@@ -25,3 +22,6 @@ class Request:
 
     def add_discard(self):
         self.discards += 1
+
+    def get_discards(self):
+        return self.discards

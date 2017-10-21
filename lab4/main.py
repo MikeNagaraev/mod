@@ -8,6 +8,39 @@ p2 = 0.35
 
 iterations = 1000000
 
+def calculate(channel_1, channel_2, queue, request):
+    if channel_2.get_value() == 1:
+        print("YES")
+        channel_2.generate()
+        if channel_2.get_processed():
+            channel_2.add_out()
+            if channel_1.get_value() == 1:
+                channel_1.set_value(0)
+            else:
+                channel_2.set_value(0)
+        else:
+            if channel_1.get_value() == 1:
+                channel_1.generate()
+                if channel_1.get_processed():
+                    channel_1.add_discard()
+                    channel_1.set_value(0)
+    else:
+        print("NO")
+        if channel_1.get_value() == 1:
+            channel_1.generate()
+            if channel_1.get_processed():
+                channel_1.set_value(0)
+                channel_2.set_value(1)
+
+            if not queue.is_empty():
+                if channel_1.get_value() == 0:
+                    channel_1.set_value(1)
+                    queue.remove_item()
+
+def statistics(channel_1, channel_2, request):
+    print("All requests: %d" %request.get_requests())
+    print("Out requests: %d" % channel_2.get_outs())
+    print("Discards: %d" % (request.get_discards() + channel_1.get_discards()))
 
 def main():
     request = Request(p)
@@ -16,44 +49,22 @@ def main():
     channel_2 = Channel(p2)
 
     for i in range(iterations):
-        channel_1.generate()
-        channel_2.generate()
         request.generate()
-
-        if (channel_2.get_processed() == False):
-            if (channel_1.get_processed()):
-                channel_1.add_discard()
-
-            if not queue.is_empty() and channel_1.get_processed():
-                channel_1.set_processed(False)
-                queue.remove_item()
-
-            if (request.has_request() == True):
-                if (queue.is_full()):
-                    request.add_discard()
-                    request.set_has_request(False)
-                elif (not queue.is_full() and not queue.is_empty()):
-                    queue.add_item()
-                    request.set_has_request(False)
-                else:
-                    if (channel_1.get_processed() == True):
-                        channel_1.add_item()
-                        request.set_has_request(False)
-                    else:
-                        queue.add_item()
-                        request.set_has_request(False)
-        else:
-
-
-        if (channel_1.get_state()):
-            if ()
-
-        if (request.get_state()):
-            if queue.is_full():
-                request.add_discard()
-            else:
+        if request.was_request():
+            if queue.is_empty():
                 queue.add_item()
+                calculate(channel_1, channel_2, queue, request)
+            else:
+                calculate(channel_1, channel_2, queue, request)
+                if not queue.is_empty():
+                    request.add_discard()
+                else:
+                    queue.add_item()
+        else:
+            calculate(channel_1, channel_2, queue, request)
 
+
+    statistics(channel_1, channel_2, request)
 
 if __name__ == "__main__":
     main()
