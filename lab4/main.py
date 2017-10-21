@@ -14,9 +14,11 @@ def calculate(channel_1, channel_2, queue, request):
         if channel_2.get_processed():
             channel_2.add_out()
             if channel_1.get_value() == 1:
-                channel_1.set_value(0)
-            else:
-                channel_2.set_value(0)
+                channel_1.generate()
+                if channel_1.get_processed():
+                    channel_1.set_value(0)
+                else:
+                    channel_2.set_value(0)
         else:
             if channel_1.get_value() == 1:
                 channel_1.generate()
@@ -41,10 +43,11 @@ def calculate(channel_1, channel_2, queue, request):
 def statistics(channel_1, channel_2, request):
     all_requests = request.get_requests()
     all_discards = request.get_discards() + channel_1.get_discards()
-    
+
     print("All requests: %d" %all_requests)
     print("Out requests: %d" % channel_2.get_outs())
-    print("Discards: %f" % (all_discards/all_requests))
+    print("All discards: %d" % all_discards)
+    print("Discards: %f" % (all_discards / all_requests))
 
 def main():
     request = Request(p)
