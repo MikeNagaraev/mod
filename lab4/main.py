@@ -56,21 +56,26 @@ def calculate(channel_1, channel_2, queue, request):
                 queue.remove_item()
                 channel_1.set_value(1)
 
-def statistics(channel_1, channel_2, request):
+def statistics(channel_1, channel_2, request, count):
     all_requests = request.get_requests()
     all_discards = request.get_discards() + channel_1.get_discards()
     p_otk = (all_discards / all_requests)
+    A = channel_2.get_outs()
 
     print("All requests: %d" %all_requests)
-    print("A: %d" % channel_2.get_outs())
+    print("A: %d" % A)
     print("P_otk: %f" % p_otk)
     print("Q: %f" % (1 - p_otk))
+    print("Count: %d" %count)
+    print("W: %f" %(count / A))
 
 def main():
     request = Request(p)
     queue = Queue()
     channel_1 = Channel(p1)
     channel_2 = Channel(p2)
+
+    count = 0
 
     for i in range(iterations):
         request.generate()
@@ -87,8 +92,12 @@ def main():
         else:
             calculate(channel_1, channel_2, queue, request)
 
+        count += channel_1.get_value()
+        count += channel_2.get_value()
+        count += queue.get_value()
 
-    statistics(channel_1, channel_2, request)
+
+    statistics(channel_1, channel_2, request, count)
 
 if __name__ == "__main__":
     main()
