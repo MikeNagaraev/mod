@@ -22,6 +22,10 @@ def calculate(channel_1, channel_2, queue, request):
                         queue.remove_item()
                 else:
                     channel_2.set_value(0)
+            else:
+                if not queue.is_empty():
+                    channel_1.set_value(1)
+                    queue.remove_item()
         else:
             if channel_1.get_value() == 1:
                 channel_1.generate()
@@ -43,8 +47,9 @@ def calculate(channel_1, channel_2, queue, request):
                     channel_1.set_value(1)
                     queue.remove_item()
         else:
-            queue.remove_item()
-            channel_1.set_value(1)
+            if not queue.is_empty():
+                queue.remove_item()
+                channel_1.set_value(1)
 
 def statistics(channel_1, channel_2, request):
     all_requests = request.get_requests()
