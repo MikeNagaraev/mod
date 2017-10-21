@@ -13,15 +13,16 @@ def calculate(channel_1, channel_2, queue, request):
         channel_2.generate()
         if channel_2.get_processed():
             channel_2.add_out()
+            channel_2.set_value(0)
             if channel_1.get_value() == 1:
                 channel_1.generate()
                 if channel_1.get_processed():
                     channel_1.set_value(0)
+                    channel_2.set_value(1)
                     if not queue.is_empty():
                         channel_1.set_value(1)
                         queue.remove_item()
-                else:
-                    channel_2.set_value(0)
+
             else:
                 if not queue.is_empty():
                     channel_1.set_value(1)
@@ -35,6 +36,10 @@ def calculate(channel_1, channel_2, queue, request):
                     if not queue.is_empty():
                         channel_1.set_value(1)
                         queue.remove_item()
+            else:
+                if not queue.is_empty():
+                    channel_1.set_value(1)
+                    queue.remove_item()
     else:
         if channel_1.get_value() == 1:
             channel_1.generate()
@@ -54,11 +59,12 @@ def calculate(channel_1, channel_2, queue, request):
 def statistics(channel_1, channel_2, request):
     all_requests = request.get_requests()
     all_discards = request.get_discards() + channel_1.get_discards()
+    p_otk = (all_discards / all_requests)
 
     print("All requests: %d" %all_requests)
-    print("Out requests: %d" % channel_2.get_outs())
-    print("All discards: %d" % all_discards)
-    print("Discards: %f" % (all_discards / all_requests))
+    print("A: %d" % channel_2.get_outs())
+    print("P_otk: %f" % p_otk)
+    print("Q: %f" % (1 - p_otk))
 
 def main():
     request = Request(p)
