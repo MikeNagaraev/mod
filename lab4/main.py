@@ -10,7 +10,6 @@ iterations = 1000000
 
 def calculate(channel_1, channel_2, queue, request):
     if channel_2.get_value() == 1:
-        print("YES")
         channel_2.generate()
         if channel_2.get_processed():
             channel_2.add_out()
@@ -25,7 +24,6 @@ def calculate(channel_1, channel_2, queue, request):
                     channel_1.add_discard()
                     channel_1.set_value(0)
     else:
-        print("NO")
         if channel_1.get_value() == 1:
             channel_1.generate()
             if channel_1.get_processed():
@@ -36,11 +34,17 @@ def calculate(channel_1, channel_2, queue, request):
                 if channel_1.get_value() == 0:
                     channel_1.set_value(1)
                     queue.remove_item()
+        else:
+            queue.remove_item()
+            channel_1.set_value(1)
 
 def statistics(channel_1, channel_2, request):
-    print("All requests: %d" %request.get_requests())
+    all_requests = request.get_requests()
+    all_discards = request.get_discards() + channel_1.get_discards()
+    
+    print("All requests: %d" %all_requests)
     print("Out requests: %d" % channel_2.get_outs())
-    print("Discards: %d" % (request.get_discards() + channel_1.get_discards()))
+    print("Discards: %f" % (all_discards/all_requests))
 
 def main():
     request = Request(p)
