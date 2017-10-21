@@ -59,15 +59,14 @@ def calculate(channel_1, channel_2, queue, request):
 def statistics(channel_1, channel_2, request, count):
     all_requests = request.get_requests()
     all_discards = request.get_discards() + channel_1.get_discards()
-    p_otk = (all_discards / all_requests)
-    A = channel_2.get_outs()
+    outs = channel_2.get_outs()
+    p_otk = (all_discards / iterations)
 
-    print("All requests: %d" %all_requests)
-    print("A: %d" % A)
-    print("P_otk: %f" % p_otk)
+    print("A: %f" % (outs / iterations))
+    print("P otk: %f" % p_otk)
     print("Q: %f" % (1 - p_otk))
-    print("Count: %d" %count)
-    print("W: %f" %(count / A))
+    print("L: %f" % (count / iterations))
+    print("W: %f" %(count / outs))
 
 def main():
     request = Request(p)
