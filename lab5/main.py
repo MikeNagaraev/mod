@@ -51,6 +51,7 @@ def main():
             if incoming_requests[process_i] >= channel_time:
                 channel_time = incoming_requests[process_i] + -math.log(random.random()) / m
                 channel.add_out()
+                queue.remove_item()
             else:
                 queue.add_item()
 
