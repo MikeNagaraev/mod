@@ -41,14 +41,15 @@ def main():
     is_channel_broken = False
 
     while process_i < N:
-        if channel_breakages[broken_i] <= channel_time:
-            channel_time += -math.log(random.random()) / y
+        if channel_breakages[broken_i] <= channel_time and is_channel_broken == False:
+            channel_time = channel_breakages[broken_i] + -math.log(random.random()) / y
             broken_i += 1
             is_channel_broken = True
+            queue.add_item()
         else:
             is_channel_broken = False
             if incoming_requests[process_i] >= channel_time:
-                channel_time += -math.log(random.random()) / m
+                channel_time = incoming_requests[process_i] + -math.log(random.random()) / m
                 channel.add_out()
             else:
                 queue.add_item()
